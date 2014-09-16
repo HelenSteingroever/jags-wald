@@ -3,11 +3,15 @@
 #include <rng/RNG.h>
 #include <util/nainf.h>
 
+#include <JRmath.h>
 #include <cmath>
 
 using std::vector;
 
-#define PROB(par) (*par[0])
+#define LAMBDA(par) (*par[0])
+#define ALPHA(par) (*par[1])
+#define V(par) (*par[2])
+#define D(par) (*par[3])
 
 namespace wald {
 
@@ -16,7 +20,26 @@ DWald::DWald() : ScalarDist("dwald", 1, DIST_PROPORTION)
 
 bool DWald::checkParameterValue (vector<double const *> const &parameters) const
 {
-    return  (PROB(parameters) >= 0.0 && PROB(parameters) <= 1.0);
+    return  (true);
+}
+
+double DWald::dwald_trunc(double t, vector<double const *> const &parameters) const
+{
+  double lambda = LAMBDA(parameters); 
+  double alpha = ALPHA(parameters); 
+  double v = V(parameters); 
+  double d = D(parameters);
+
+  double w;
+  
+  w = alpha * sqrt( lambda / (2 * M_PI * pow(t, 3) * (lambda * t * v + 1)) ) *
+      1 / pnorm(d / sqrt(v), 0, 1, 1, 0) *
+      exp( - (lambda * pow(d * t - alpha, 2)) / 
+           (2 * t * (lambda * t * v + 1)) ) *
+      pnorm( (lambda * alpha * v + d) / 
+             (sqrt(lambda * t * pow(v, 2) + v) ), 0, 1, 1, 0);
+
+  return w;
 }
 
 double DWald::logDensity(double x, PDFType type,
@@ -24,10 +47,8 @@ double DWald::logDensity(double x, PDFType type,
        double const *lbound, double const *ubound) const 
 {
     double d = 0;
-    if (x == 1)
-      d = PROB(parameters);
-    else if (x == 0)
-      d = 1 - PROB(parameters);
+
+    d = dwald_trunc(x , parameters);
     
     return d == 0 ? JAGS_NEGINF : log(d);
 }
@@ -36,13 +57,13 @@ double DWald::randomSample(vector<double const *> const &parameters,
          double const *lbound, double const *ubound,
          RNG *rng) const
 {
-    return rng->uniform() < PROB(parameters) ? 1 : 0;
+    return fabs( rng->uniform() );
 }
 
 double DWald::typicalValue(vector<double const *> const &parameters,
          double const *lbound, double const *ubound) const
 {
-    return PROB(parameters) > 0.5 ? 1 : 0;
+    return 0.5;
 }
 
 bool DWald::isDiscreteValued(vector<bool> const &mask) const
