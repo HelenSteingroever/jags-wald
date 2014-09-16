@@ -15,7 +15,7 @@ using std::vector;
 
 namespace wald {
 
-DWald::DWald() : ScalarDist("dwald", 1, DIST_PROPORTION)
+DWald::DWald() : ScalarDist("dwald", 4, DIST_PROPORTION)
 {}
 
 bool DWald::checkParameterValue (vector<double const *> const &parameters) const

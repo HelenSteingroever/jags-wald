@@ -6,7 +6,7 @@
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
 # created 2013-03-19
-# last mod 2013-04-29 18:34 DW
+# last mod 2014-09-16 12:13 DW
 #
 
 # necessary libs
@@ -24,7 +24,7 @@ mf <- textConnection("model {
   d ~ dunif(0.01,1.5)
 
   for (i in 1:N) {
-    x[i] ~ dwald_trunc(lambda, alpha, v, d)
+    x[i] ~ dwald(lambda, alpha, v, d)
   }
 
 }")
@@ -35,7 +35,7 @@ N <- 1000
 nu <- rtruncnorm(N, a=0, b=Inf, mean=1, sd=1/sqrt(1))  
 # (2) Generate RTs
 alpha=lambda=1
-RT=rinvgauss(N, mu=alpha/nu, lambda*alpha^2)
+RT=rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
 plot(density(RT[RT<=3]))
 
 x <- RT[RT<=3]
