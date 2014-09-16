@@ -1,10 +1,10 @@
-noinst_LTLIBRARIES = bernoullidist.la
+noinst_LTLIBRARIES = walddist.la
 
-bernoullidist_la_CPPFLAGS = -I$(top_srcdir)/src \
+walddist_la_CPPFLAGS = -I$(top_srcdir)/src \
 												 -I$(includedir)/JAGS
 
-bernoullidist_la_LDFLAGS = -no-undefined -module -avoid-version
+walddist_la_LDFLAGS = -no-undefined -module -avoid-version
 
-bernoullidist_la_SOURCES = DBern.cc 
+walddist_la_SOURCES = DWald.cc 
 
-noinst_HEADERS = DBern.h
+noinst_HEADERS = DWald.h

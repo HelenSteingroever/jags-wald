@@ -1,5 +1,5 @@
 #include <config.h>
-#include "DBern.h"
+#include "DWald.h"
 #include <rng/RNG.h>
 #include <util/nainf.h>
 
@@ -9,17 +9,17 @@ using std::vector;
 
 #define PROB(par) (*par[0])
 
-namespace bernoulli {
+namespace wald {
 
-DBern::DBern() : ScalarDist("dbern2", 1, DIST_PROPORTION)
+DWald::DWald() : ScalarDist("dwald", 1, DIST_PROPORTION)
 {}
 
-bool DBern::checkParameterValue (vector<double const *> const &parameters) const
+bool DWald::checkParameterValue (vector<double const *> const &parameters) const
 {
     return  (PROB(parameters) >= 0.0 && PROB(parameters) <= 1.0);
 }
 
-double DBern::logDensity(double x, PDFType type,
+double DWald::logDensity(double x, PDFType type,
        vector<double const *> const &parameters,
        double const *lbound, double const *ubound) const 
 {
@@ -32,20 +32,20 @@ double DBern::logDensity(double x, PDFType type,
     return d == 0 ? JAGS_NEGINF : log(d);
 }
 
-double DBern::randomSample(vector<double const *> const &parameters, 
+double DWald::randomSample(vector<double const *> const &parameters, 
          double const *lbound, double const *ubound,
          RNG *rng) const
 {
     return rng->uniform() < PROB(parameters) ? 1 : 0;
 }
 
-double DBern::typicalValue(vector<double const *> const &parameters,
+double DWald::typicalValue(vector<double const *> const &parameters,
          double const *lbound, double const *ubound) const
 {
     return PROB(parameters) > 0.5 ? 1 : 0;
 }
 
-bool DBern::isDiscreteValued(vector<bool> const &mask) const
+bool DWald::isDiscreteValued(vector<bool> const &mask) const
 {
     return true;
 }

@@ -1,21 +1,20 @@
-SUBDIRS = distributions functions
+SUBDIRS = distributions
 
-jagsmod_LTLIBRARIES = bernoulli.la
+jagsmod_LTLIBRARIES = wald.la
 
-bernoulli_la_SOURCES = bernoulli.cc
+wald_la_SOURCES = wald.cc
 
-bernoulli_la_CPPFLAGS = -I$(includedir)/JAGS
+wald_la_CPPFLAGS = -I$(includedir)/JAGS
 
-bernoulli_la_LIBADD = distributions/bernoullidist.la
-bernoulli_la_LIBADD += functions/bernoullifunc.la
+wald_la_LIBADD = distributions/walddist.la
 
 if WINDOWS
-bernoulli_la_LIBADD += -ljags-$(JAGS_MAJOR) -ljrmath-0
+wald_la_LIBADD += -ljags-$(JAGS_MAJOR) -ljrmath-0
 else
-bernoulli_la_LIBADD += -ljags -ljrmath
+wald_la_LIBADD += -ljags -ljrmath
 endif
 
-bernoulli_la_LDFLAGS = -module -avoid-version
+wald_la_LDFLAGS = -module -avoid-version
 if WINDOWS
-bernoulli_la_LDFLAGS += -no-undefined
+wald_la_LDFLAGS += -no-undefined
 endif

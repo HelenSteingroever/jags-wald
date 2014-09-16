@@ -1,13 +1,13 @@
-#ifndef DBERN_H_
-#define DBERN_H_
+#ifndef DWALD_H_
+#define DWALD_H_
 #include <distribution/ScalarDist.h> // JAGS scalar distribution base class
 
-namespace bernoulli {
+namespace wald {
 
-class DBern : public ScalarDist // scalar distribution class
+class DWald : public ScalarDist // scalar distribution class
 {
   public:
-    DBern(); // constructor
+    DWald(); // constructor
     double logDensity(double x, PDFType type,
                       std::vector<double const *> const &parameters,
                       double const *lower, double const *upper) const;
@@ -23,4 +23,4 @@ class DBern : public ScalarDist // scalar distribution class
 };
 
 }
-#endif /* DBERN_H_ */
+#endif /* DWALD_H_ */
