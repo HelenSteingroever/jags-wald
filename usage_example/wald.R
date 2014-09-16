@@ -9,6 +9,8 @@
 # last mod 2014-09-16 12:13 DW
 #
 
+rm(list=ls())
+
 # necessary libs
 library(rjags)
 library(truncnorm)
@@ -20,7 +22,7 @@ mf <- textConnection("model {
   # priors
   lambda ~ dunif(0.01,1.5)
   alpha ~ dunif(0.01,1.5) 
-  v ~ dunif(0.01,1.5)
+  v ~ dunif(0.5,1.5)
   d ~ dunif(0.01,1.5)
 
   for (i in 1:N) {
@@ -31,11 +33,20 @@ mf <- textConnection("model {
 
 # Genarate data
 # (1) Generate drift rates
-N <- 1000
-nu <- rtruncnorm(N, a=0, b=Inf, mean=1, sd=1/sqrt(1))  
+N <- 10000
+d <- 1
+v <- 1
+
+d <- 1.5
+v <- .5
+nu <- rtruncnorm(N, a=0, b=Inf, mean=d, sd=sqrt(v))  
 # (2) Generate RTs
 alpha=lambda=1
-RT=rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
+
+alpha <- .98
+lambda <- 1.1
+
+RT1=rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
 plot(density(RT[RT<=3]))
 
 x <- RT[RT<=3]
@@ -49,8 +60,12 @@ inits3 <- list(lambda=1.1, alpha=1.1, v=1.1, d=1.1)
 inits <- list(inits1,inits2,inits3)
 
 # sample
-j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=0)
-j.samples <- coda.samples(j.model, c("alpha","lambda", "v", "d"), n.iter=2000, thin=1)
+j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=1000)
+j.samples <- coda.samples(j.model, c("alpha","lambda", "v", "d"), n.iter=4000, thin=3)
 
 # plot
-plot(j.samples[,1])
+par(mfrow=c(3,4))
+plot(j.samples)
+
+
+save.image("samples.rdata")
