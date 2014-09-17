@@ -1,5 +1,6 @@
 #include <Module.h> // JAGS module base class
 #include <distributions/DWald.h> // Wald distribution class
+#include <distributions/DWaldGamma.h> // Wald distribution class
 
 namespace wald { // module namespace
 
@@ -11,6 +12,7 @@ class WALDModule : public Module { // module class
 
 WALDModule::WALDModule() : Module("wald") {
   insert(new DWald); // inherited function to load JAGS objects
+  insert(new DWaldGamma); // inherited function to load JAGS objects
 }
 WALDModule::~WALDModule() {
   std::vector<Distribution*> const &dvec = distributions();

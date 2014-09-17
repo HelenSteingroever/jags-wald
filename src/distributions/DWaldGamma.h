@@ -1,14 +1,17 @@
-#ifndef DWALD_H_
-#define DWALD_H_
+#ifndef DWALDGAMMA_H_
+#define DWALDGAMMA_H_
 #include <distribution/ScalarDist.h> // JAGS scalar distribution base class
 
 namespace wald {
 
-class DWald : public ScalarDist // scalar distribution class
+class DWaldGamma : public ScalarDist // scalar distribution class
 {
   public:
-    DWald(); // constructor
-    double dwald_trunc(double t, std::vector<double const *> const &parameters) const;
+    DWaldGamma(); // constructor
+    double r_gamma(double x);
+    double LaguerreL(double n, double a, double x);
+    double erf(double x);
+    double dwald_gamma(double t, std::vector<double const *> const &parameters) const;
     double logDensity(double x, PDFType type,
                       std::vector<double const *> const &parameters,
                       double const *lower, double const *upper) const;
@@ -24,4 +27,4 @@ class DWald : public ScalarDist // scalar distribution class
 };
 
 }
-#endif /* DWALD_H_ */
+#endif /* DWALDGAMMA_H_ */
