@@ -6,7 +6,7 @@
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
 # created 2013-03-19
-# last mod 2014-09-16 12:13 DW
+# last mod 2014-09-17 17:06 DW
 #
 
 rm(list=ls())
@@ -30,7 +30,8 @@ if (lambda_fixed == T){
     d ~ dunif(0.01,2)
 
     for (i in 1:N) {
-      x[i] ~ dwald(lambda, alpha, v, d)
+      x[i] ~ dwald_gamma(lambda, alpha, v, d)
+      #x[i] ~ dwald_trunc(lambda, alpha, v, d)
     }
   }")
   
@@ -48,7 +49,7 @@ if (lambda_fixed == T){
     d ~ dunif(0.01,2)
 
     for (i in 1:N) {
-      x[i] ~ dwald(lambda, alpha, v, d)
+      x[i] ~ dwald_gamma(lambda, alpha, v, d)
     }
   }")
   inits1 <- list(lambda=.7, alpha=.7, v=.7, d=.7)

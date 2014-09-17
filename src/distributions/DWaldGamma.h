@@ -8,9 +8,9 @@ class DWaldGamma : public ScalarDist // scalar distribution class
 {
   public:
     DWaldGamma(); // constructor
-    double r_gamma(double x);
-    double LaguerreL(double n, double a, double x);
-    double erf(double x);
+    double r_gamma(double x) const;
+    double LaguerreL(double n, double a, double x) const;
+    double erf(double x) const;
     double dwald_gamma(double t, std::vector<double const *> const &parameters) const;
     double logDensity(double x, PDFType type,
                       std::vector<double const *> const &parameters,

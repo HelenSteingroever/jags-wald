@@ -12,8 +12,8 @@ using std::vector;
 
 #define LAMBDA(par) (*par[0])
 #define ALPHA(par) (*par[1])
-#define V(par) (*par[2])
-#define D(par) (*par[3])
+#define TAU(par) (*par[2])
+#define KAPPA(par) (*par[3])
 
 namespace wald {
 
@@ -25,21 +25,21 @@ bool DWaldGamma::checkParameterValue (vector<double const *> const &parameters) 
     return  (true);
 }
 
-double r_gamma(double x)
+double DWaldGamma::r_gamma(double x) const
 {
   return exp(gamma(x));
 }
 
-double LaguerreL(double n, double a, double x) 
+double DWaldGamma::LaguerreL(double n, double a, double x) const
 {
   double Lf;
 
-  Lf = 1/((n+a+1)*beta(1+a,n+1)) * gsl_sf_hyperg_1F1(-n,a+1,x); 
+  Lf = 1/((n+a+1)*(r_gamma(1+a)*r_gamma(n+1)/r_gamma((1+a)+(n+1)))) * gsl_sf_hyperg_1F1(-n,a+1,x); 
 
   return Lf;
 }
 
-double erf(double x)
+double DWaldGamma::erf(double x) const
 {
   double e;
   
@@ -52,24 +52,24 @@ double DWaldGamma::dwald_gamma(double t, vector<double const *> const &parameter
 {
   double lambda = LAMBDA(parameters); 
   double alpha = ALPHA(parameters); 
-  double v = V(parameters); 
-  double d = D(parameters);
+  double tau = TAU(parameters); 
+  double kappa = KAPPA(parameters);
   
-  double w;
+  double d;
 
   if (lambda == 1 && alpha == 1 && tau == 1 && kappa == 1 )
   {
-    w = exp(- 1 / (2*t)) / (2 * pow(t,2));
+    d = exp(- 1 / (2*t)) / (2 * pow(t,2));
   }
   else if (lambda == 1 && tau == 1) 
   {
-    w = alpha*exp(-(2*alpha*kappa-1)/(2*t*pow(kappa,2)))* (1 + erf( (alpha*kappa-1) / (kappa*sqrt(2*t)) )) / (2*pow(t,2)*kappa);
+    d = alpha*exp(-(2*alpha*kappa-1)/(2*t*pow(kappa,2)))* (1 + erf( (alpha*kappa-1) / (kappa*sqrt(2*t)) )) / (2*pow(t,2)*kappa);
   }
   else 
   {  
-    w = -sqrt(0.2e1) * pow(0.2e1, tau / 0.2e1 + 0.1e1 / 0.2e1) * alpha * exp(-0.1e1 / t * alpha * alpha * lambda / 0.2e1) * pow(kappa, -tau - 0.3e1) * pow(lambda, -tau / 0.2e1 - 0.1e1) * pow(t, -tau / 0.2e1 - 0.3e1) * 0.3141592654e1 * (-sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.5e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * alpha * pow(kappa, 0.3e1) + sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.5e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * alpha * pow(kappa, 0.3e1) - sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.3e1 / 0.2e1) * pow(t, 0.3e1 / 0.2e1) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * pow(kappa, 0.3e1) + 0.2e1 * sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.3e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * kappa * kappa - 0.2e1 * sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.3e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * kappa * kappa - sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * sqrt(lambda) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * kappa + sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * sqrt(lambda) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * kappa + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(alpha, 0.3e1) * pow(kappa, 0.3e1) * pow(lambda, 0.3e1) - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(alpha, 0.3e1) * pow(kappa, 0.3e1) * pow(lambda, 0.3e1) + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * pow(kappa, 0.3e1) * lambda * lambda * tau * t - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * pow(kappa, 0.3e1) * lambda * lambda * t - 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * alpha * kappa * kappa * lambda * lambda + 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * alpha * kappa * kappa * lambda * lambda - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * kappa * kappa * lambda * tau * t + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * kappa * kappa * lambda * t + 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * kappa * lambda - 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * kappa * lambda - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1)) / r_gamma(tau) / sin(0.3141592654e1 * tau / 0.2e1) / r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) / cos(0.3141592654e1 * tau / 0.2e1) / r_gamma(-tau / 0.2e1 + 0.2e1) / 0.16e2;
+    d = -sqrt(0.2e1) * pow(0.2e1, tau / 0.2e1 + 0.1e1 / 0.2e1) * alpha * exp(-0.1e1 / t * alpha * alpha * lambda / 0.2e1) * pow(kappa, -tau - 0.3e1) * pow(lambda, -tau / 0.2e1 - 0.1e1) * pow(t, -tau / 0.2e1 - 0.3e1) * 0.3141592654e1 * (-sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.5e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * alpha * pow(kappa, 0.3e1) + sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.5e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * alpha * pow(kappa, 0.3e1) - sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.3e1 / 0.2e1) * pow(t, 0.3e1 / 0.2e1) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * pow(kappa, 0.3e1) + 0.2e1 * sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.3e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * kappa * kappa - 0.2e1 * sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.3e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * kappa * kappa - sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * sqrt(lambda) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * kappa + sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * sqrt(lambda) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * kappa + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(alpha, 0.3e1) * pow(kappa, 0.3e1) * pow(lambda, 0.3e1) - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(alpha, 0.3e1) * pow(kappa, 0.3e1) * pow(lambda, 0.3e1) + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * pow(kappa, 0.3e1) * lambda * lambda * tau * t - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * pow(kappa, 0.3e1) * lambda * lambda * t - 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * alpha * kappa * kappa * lambda * lambda + 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * alpha * kappa * kappa * lambda * lambda - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * kappa * kappa * lambda * tau * t + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * kappa * kappa * lambda * t + 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * kappa * lambda - 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * kappa * lambda - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1)) / r_gamma(tau) / sin(0.3141592654e1 * tau / 0.2e1) / r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) / cos(0.3141592654e1 * tau / 0.2e1) / r_gamma(-tau / 0.2e1 + 0.2e1) / 0.16e2;
   }   
-  return w;
+  return d;
 }
 
 double DWaldGamma::logDensity(double x, PDFType type,

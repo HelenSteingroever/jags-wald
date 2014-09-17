@@ -124,3 +124,6 @@ src/wald.la
 src/wald_la-wald.lo
 stamp-h1
 config.h.in~
+src/distributions/.deps/
+src/distributions/.libs/
+src/distributions/walddist_la-DWaldGamma.lo
