@@ -20,10 +20,11 @@ load.module("wald")
 # model
 mf <- textConnection("model {
   # priors
-  lambda ~ dunif(0.01,1.5)
-  alpha ~ dunif(0.01,1.5) 
-  v ~ dunif(0.5,1.5)
-  d ~ dunif(0.01,1.5)
+  #lambda <- 1
+  lambda ~ dunif(0.01,2) 
+  alpha ~ dunif(0.01,2) 
+  v ~ dunif(0.01,2)
+  d ~ dunif(0.01,2)
 
   for (i in 1:N) {
     x[i] ~ dwald(lambda, alpha, v, d)
@@ -37,19 +38,20 @@ N <- 10000
 d <- 1
 v <- 1
 
-d <- 1.5
-v <- .5
+#d <- 1.5
+#v <- .5
 nu <- rtruncnorm(N, a=0, b=Inf, mean=d, sd=sqrt(v))  
 # (2) Generate RTs
 alpha=lambda=1
 
-alpha <- .98
-lambda <- 1.1
+#alpha <- .98
+#lambda <- 1.1
 
-RT1=rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
+RT=rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
 plot(density(RT[RT<=3]))
 
-x <- RT[RT<=3]
+#x <- RT[RT<=3]
+x <- RT
 N <- length(x)
 dat <- list(x=x, N=N)
 
@@ -61,11 +63,24 @@ inits <- list(inits1,inits2,inits3)
 
 # sample
 j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=1000)
-j.samples <- coda.samples(j.model, c("alpha","lambda", "v", "d"), n.iter=4000, thin=3)
+j.samples <- coda.samples(j.model, c("lambda", "alpha", "v", "d"), n.iter=4000, thin=3)
 
 # plot
 par(mfrow=c(3,4))
 plot(j.samples)
 
 
-save.image("samples.rdata")
+save.image("~/Dropbox/2014/Wald/TruncNorm/Results/samples_lambda_free.rdata")
+
+
+########
+alpha <- .965
+d <- 1.34
+v <- .015
+lambda <- 1
+nu <- rtruncnorm(N, a=0, b=Inf, mean=d, sd=sqrt(v))  
+RT2 <- rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
+
+plot(density(RT[RT<=3]))
+lines(density(RT2[RT2<=3]))
+
