@@ -32,7 +32,7 @@ double DWald::dwald_trunc(double t, vector<double const *> const &parameters) co
 
   double w;
   
-  */ w = alpha * sqrt( lambda / (2 * M_PI * pow(t, 3) * (lambda * t * v + 1)) ) *
+  /* w = alpha * sqrt( lambda / (2 * M_PI * pow(t, 3) * (lambda * t * v + 1)) ) *
       1 / pnorm(d / sqrt(v), 0, 1, 1, 0) *
       exp( - (lambda * pow(d * t - alpha, 2)) / 
            (2 * t * (lambda * t * v + 1)) ) *
@@ -44,8 +44,8 @@ double DWald::dwald_trunc(double t, vector<double const *> const &parameters) co
       0.5 * ( log(lambda) - 
               log(2) - log(M_PI) - 3 * log(t) - log(lambda * t * v + 1)) -
       log(pnorm(d / sqrt(v), 0, 1, 1, 0) ) -
-      (lambda * (d * t - alpha)^2) / (2 * t * (lambda * t * v + 1)) +
-      log(pnorm((lambda * alpha * v + d) / (sqrt(lambda * t * v^2 + v)), 0, 1, 1, 0 ));
+      (lambda * pow(d * t - alpha,2)) / (2 * t * (lambda * t * v + 1)) +
+      log(pnorm((lambda * alpha * v + d) / (sqrt(lambda * t * pow(v,2) + v)), 0, 1, 1, 0 ));
   
   return w;
 }
@@ -58,7 +58,7 @@ double DWald::logDensity(double x, PDFType type,
 
     d = dwald_trunc(x , parameters);
     
-    return d == 0 ? JAGS_NEGINF : log(d);
+    return d;
 }
 
 double DWald::randomSample(vector<double const *> const &parameters, 

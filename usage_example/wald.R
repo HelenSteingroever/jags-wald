@@ -17,53 +17,67 @@ library(truncnorm)
 library(statmod)
 load.module("wald")
 
+# Should lambda be fixed to 1?
+lambda_fixed <- F
+
 # model
-mf <- textConnection("model {
-  # priors
-  #lambda <- 1
-  lambda ~ dunif(0.01,2) 
-  alpha ~ dunif(0.01,2) 
-  v ~ dunif(0.01,2)
-  d ~ dunif(0.01,2)
+if (lambda_fixed == T){
+  mf <- textConnection("model {
+    # priors
+    lambda <- 1
+    alpha ~ dunif(0.01,2) 
+    v ~ dunif(0.01,2)
+    d ~ dunif(0.01,2)
 
-  for (i in 1:N) {
-    x[i] ~ dwald(lambda, alpha, v, d)
-  }
+    for (i in 1:N) {
+      x[i] ~ dwald(lambda, alpha, v, d)
+    }
+  }")
+  
+  inits1 <- list(alpha=.7, v=.7, d=.7)
+  inits2 <- list(alpha=.9, v=.9, d=.9)
+  inits3 <- list(alpha=1.1, v=1.1, d=1.1)
+  
+  params <- c("alpha", "v", "d")
+} else {
+  mf <- textConnection("model {
+    # priors
+    lambda ~ dunif(0.01,2) 
+    alpha ~ dunif(0.01,2) 
+    v ~ dunif(0.01,2)
+    d ~ dunif(0.01,2)
 
-}")
+    for (i in 1:N) {
+      x[i] ~ dwald(lambda, alpha, v, d)
+    }
+  }")
+  inits1 <- list(lambda=.7, alpha=.7, v=.7, d=.7)
+  inits2 <- list(lambda=.9, alpha=.9, v=.9, d=.9)
+  inits3 <- list(lambda=1.1, alpha=1.1, v=1.1, d=1.1)
+  
+  params <- c("lambda", "alpha", "v", "d")
+}
 
 # Genarate data
 # (1) Generate drift rates
 N <- 10000
 d <- 1
 v <- 1
-
-#d <- 1.5
-#v <- .5
 nu <- rtruncnorm(N, a=0, b=Inf, mean=d, sd=sqrt(v))  
 # (2) Generate RTs
 alpha=lambda=1
-
-#alpha <- .98
-#lambda <- 1.1
-
 RT=rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
 plot(density(RT[RT<=3]))
-
-#x <- RT[RT<=3]
 x <- RT
 N <- length(x)
 dat <- list(x=x, N=N)
 
 # inits
-inits1 <- list(lambda=.7, alpha=.7, v=.7, d=.7)
-inits2 <- list(lambda=.9, alpha=.9, v=.9, d=.9)
-inits3 <- list(lambda=1.1, alpha=1.1, v=1.1, d=1.1)
 inits <- list(inits1,inits2,inits3)
 
 # sample
 j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=1000)
-j.samples <- coda.samples(j.model, c("lambda", "alpha", "v", "d"), n.iter=4000, thin=3)
+j.samples <- coda.samples(j.model, params, n.iter=4000, thin=3)
 
 # plot
 par(mfrow=c(3,4))
