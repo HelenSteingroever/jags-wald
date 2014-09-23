@@ -18,16 +18,16 @@ library(statmod)
 load.module("wald")
 
 # Should lambda be fixed to 1?
-lambda_fixed <- F
+lambda_fixed <- T
 
 # model
 if (lambda_fixed == T){
   mf <- textConnection("model {
     # priors
     lambda <- 1
-    alpha ~ dunif(0.01,2) 
-    v ~ dunif(0.01,2)
-    d ~ dunif(0.01,2)
+    alpha ~ dunif(0.99,1.01) 
+    v ~ dunif(0.99,1.01)
+    d ~ dunif(0.99,1.01)
 
     for (i in 1:N) {
       x[i] ~ dwald_gamma(lambda, alpha, v, d)
@@ -35,9 +35,9 @@ if (lambda_fixed == T){
     }
   }")
   
-  inits1 <- list(alpha=.7, v=.7, d=.7)
-  inits2 <- list(alpha=.9, v=.9, d=.9)
-  inits3 <- list(alpha=1.1, v=1.1, d=1.1)
+  inits1 <- list(alpha=1, v=1, d=1)
+  inits2 <- list(alpha=1, v=1, d=1)
+  inits3 <- list(alpha=1, v=1, d=1)
   
   params <- c("alpha", "v", "d")
 } else {
@@ -64,12 +64,13 @@ if (lambda_fixed == T){
 N <- 10000
 d <- 1
 v <- 1
-nu <- rtruncnorm(N, a=0, b=Inf, mean=d, sd=sqrt(v))  
+#nu <- rtruncnorm(N, a=0, b=Inf, mean=d, sd=sqrt(v))  
+nu <- rgamma(N, d, v)
 # (2) Generate RTs
 alpha=lambda=1
 RT=rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
 plot(density(RT[RT<=3]))
-x <- RT
+x <- RT[RT]
 N <- length(x)
 dat <- list(x=x, N=N)
 
@@ -77,8 +78,8 @@ dat <- list(x=x, N=N)
 inits <- list(inits1,inits2,inits3)
 
 # sample
-j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=1000)
-j.samples <- coda.samples(j.model, params, n.iter=4000, thin=3)
+j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=100)
+j.samples <- coda.samples(j.model, params, n.iter=400, thin=3)
 
 # plot
 par(mfrow=c(3,4))
@@ -98,4 +99,7 @@ RT2 <- rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
 
 plot(density(RT[RT<=3]))
 lines(density(RT2[RT2<=3]))
+
+#######
+
 
