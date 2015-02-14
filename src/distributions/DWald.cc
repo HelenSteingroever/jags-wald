@@ -6,8 +6,6 @@
 #include <JRmath.h>
 #include <cmath>
 
-#include <gsl/gsl_specfunc.h>
-
 using std::vector;
 
 #define ALPHA(par) (*par[0])
@@ -16,7 +14,7 @@ using std::vector;
 
 namespace wald {
 
-DWald::DWald() : ScalarDist("dwald", 4, DIST_PROPORTION)
+DWald::DWald() : ScalarDist("dwald", 3, DIST_PROPORTION)
 {}
 
 bool DWald::checkParameterValue (vector<double const *> const &parameters) const
