@@ -1,14 +1,14 @@
-#ifndef DWALD_H_
-#define DWALD_H_
+#ifndef DSWALD_H_
+#define DSWALD_H_
 #include <distribution/ScalarDist.h> // JAGS scalar distribution base class
 
 namespace wald {
 
-class DWald : public ScalarDist // scalar distribution class
+class DSWald : public ScalarDist // scalar distribution class
 {
   public:
-    DWald(); // constructor
-    double dwald(double t, std::vector<double const *> const &parameters) const;
+    DSWald(); // constructor
+    double dswald(double t, std::vector<double const *> const &parameters) const;
     double logDensity(double x, PDFType type,
                       std::vector<double const *> const &parameters,
                       double const *lower, double const *upper) const;
@@ -24,4 +24,4 @@ class DWald : public ScalarDist // scalar distribution class
 };
 
 }
-#endif /* DWALD_H_ */
+#endif /* DSWALD_H_ */

@@ -50,44 +50,142 @@ double DWaldGamma::erf(double x) const
 
 double DWaldGamma::dwald_gamma(double t, vector<double const *> const &parameters) const
 {
+  // calculates log density
   double lambda = LAMBDA(parameters); 
   double alpha = ALPHA(parameters); 
   double tau = TAU(parameters); 
   double kappa = KAPPA(parameters);
   
   double d;
-  
-  if (t < 0.01 || tau >= 2 || kappa <= 0.2)
+    
+  if (alpha == 1 && tau == 1 && kappa == 1 )
   {
-    d = 0;  
+      d = (- 1. / (2.*t)) - log(2.) -2*log(t);
   }
-  else if (lambda == 1 && alpha == 1 && tau == 1 && kappa == 1 )
+  else if (tau == 1)
   {
-    d = exp(- 1 / (2*t)) / (2 * pow(t,2));
+      d = log(alpha) - ((2.*alpha*kappa-1.)/(2.*t*pow(kappa,2))) + 
+      log(1. + erf( (alpha*kappa-1.) / (kappa*sqrt(2.*t)) )) -
+      log(2.) - 2*log(t) - log(kappa);
   }
-  else if (lambda == 1 && tau == 1) 
+  else
   {
-    d = alpha*exp(-(2*alpha*kappa-1)/(2*t*pow(kappa,2)))* (1 + erf( (alpha*kappa-1) / (kappa*sqrt(2*t)) )) / (2*pow(t,2)*kappa);
+      double L1; 
+      double L2; 
+      double L3; 
+      double L4; 
+      double C1; 
+      double C2; 
+                                                 
+      L1 = LaguerreL(-(.5)*tau+.5, .5, (.5)*pow(alpha*kappa-1.,2)/(pow(kappa,2)*t));
+      
+      L2 = LaguerreL(-(.5)*tau+.5, 3./2., (.5)*pow(alpha*kappa-1.,2)/(pow(kappa,2)*t));
+      
+      L3 = LaguerreL(-(.5)*tau, .5, (.5)*pow(alpha*kappa-1.,2)/(pow(kappa,2)*t));
+      
+      L4 = LaguerreL(-(.5)*tau, 3./2., (.5)*pow(alpha*kappa-1.,2)/(pow(kappa,2)*t));
+      
+      C1 = sin((.5)*M_PI*tau)*r_gamma(-(.5)*tau+3./2.);
+      
+      C2 = sqrt(2.)*pow(alpha,3)*pow(kappa,3)*sqrt(t);
+      
+      d = log(-(1.0/16.0)*pow(2.,((.5)*tau+.5))*alpha*exp(-(.5)*pow(alpha,2)/t)*pow(kappa,(-tau-3.))*
+      pow(t,(-(.5)*tau-7.0/2.0))*M_PI*
+      
+      (
+       
+       C1*
+       L1*
+       C2 +
+       
+       C1*
+       L1*
+       sqrt(2.)*alpha*pow(kappa,3)*tau*pow(t,(3./2.)) -
+       
+       C1*
+       L2*
+       C2 -
+       
+       C1*
+       L1*
+       sqrt(2.)*alpha*pow(kappa,3)*pow(t,(3./2.)) -
+       
+       3.*C1*
+       L1*
+       sqrt(2.)*pow(alpha,2)*pow(kappa,2)*sqrt(t) -
+       
+       C1*
+       L1*
+       sqrt(2.)*pow(kappa,2)*tau*pow(t,(3./2.)) +
+       
+       3.*C1*
+       L2*
+       sqrt(2.)*pow(alpha,2)*pow(kappa,2)*sqrt(t)-
+       
+       2.*
+       L3*
+       cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*pow(alpha,2)*pow(kappa,3)*t +
+       
+       2.*cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*
+       L4*
+       pow(alpha,2)*pow(kappa,3)*t +
+       
+       C1*
+       L1*
+       sqrt(2.)*pow(kappa,2)*pow(t,(3./2.)) -
+       
+       2.*
+       L3*
+       cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*pow(kappa,3)*pow(t,2) +
+       
+       3.*C1*
+       L1*
+       sqrt(2.)*alpha*kappa*sqrt(t) -
+       
+       3.*C1*
+       L2*
+       sqrt(2.)*alpha*kappa*sqrt(t) +
+       
+       4.*
+       L3*
+       cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*alpha*pow(kappa,2)*t -
+       
+       4.*cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*
+       L4*
+       alpha*pow(kappa,2)*t -
+       
+       C1*
+       L1*
+       sqrt(2.)*sqrt(t) +
+       
+       C1*
+       L2*
+       sqrt(2.)*sqrt(t) -
+       
+       2.*
+       L3*
+       cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*kappa*t +
+       
+       2.*cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*
+       L4*
+       kappa*t
+       
+       ))-
+      
+      log(r_gamma(tau)) -log(C1) - log(cos((.5)*M_PI*tau)) - log(r_gamma(-(.5)*tau+2.));
   }
-  else 
-  {  
-    d = -sqrt(0.2e1) * pow(0.2e1, tau / 0.2e1 + 0.1e1 / 0.2e1) * alpha * exp(-0.1e1 / t * alpha * alpha * lambda / 0.2e1) * pow(kappa, -tau - 0.3e1) * pow(lambda, -tau / 0.2e1 - 0.1e1) * pow(t, -tau / 0.2e1 - 0.3e1) * 0.3141592654e1 * (-sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.5e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * alpha * pow(kappa, 0.3e1) + sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.5e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * alpha * pow(kappa, 0.3e1) - sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.3e1 / 0.2e1) * pow(t, 0.3e1 / 0.2e1) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * pow(kappa, 0.3e1) + 0.2e1 * sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.3e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * kappa * kappa - 0.2e1 * sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(lambda, 0.3e1 / 0.2e1) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * alpha * kappa * kappa - sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * sqrt(lambda) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * kappa + sqrt(0.2e1) * LaguerreL(-tau / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * sqrt(lambda) * sqrt(t) * cos(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.2e1) * kappa + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(alpha, 0.3e1) * pow(kappa, 0.3e1) * pow(lambda, 0.3e1) - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * pow(alpha, 0.3e1) * pow(kappa, 0.3e1) * pow(lambda, 0.3e1) + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * pow(kappa, 0.3e1) * lambda * lambda * tau * t - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * pow(kappa, 0.3e1) * lambda * lambda * t - 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * alpha * kappa * kappa * lambda * lambda + 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * alpha * kappa * kappa * lambda * lambda - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * kappa * kappa * lambda * tau * t + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * kappa * kappa * lambda * t + 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * kappa * lambda - 0.3e1 * sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) * alpha * kappa * lambda - sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.1e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1) + sin(0.3141592654e1 * tau / 0.2e1) * r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) * LaguerreL(-tau / 0.2e1 + 0.1e1 / 0.2e1, 0.3e1 / 0.2e1, 0.1e1 / lambda * pow(alpha * kappa * lambda - 0.1e1, 0.2e1) * pow(kappa, -0.2e1) / t / 0.2e1)) / r_gamma(tau) / sin(0.3141592654e1 * tau / 0.2e1) / r_gamma(-tau / 0.2e1 + 0.3e1 / 0.2e1) / cos(0.3141592654e1 * tau / 0.2e1) / r_gamma(-tau / 0.2e1 + 0.2e1) / 0.16e2;
-  }   
-
-  if (d<0) d = 0;
-
-  return d;
+  return(d);
 }
 
 double DWaldGamma::logDensity(double x, PDFType type,
        vector<double const *> const &parameters,
        double const *lbound, double const *ubound) const 
 {
-    double d = 0;
+    double logd = 0;
 
-    d = dwald_gamma(x , parameters);
+    logd = dwald_gamma(x , parameters);
 
-    return d == 0 ? JAGS_NEGINF : log(d);
+    return logd;
 }
 
 double DWaldGamma::randomSample(vector<double const *> const &parameters, 
