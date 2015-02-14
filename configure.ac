@@ -42,5 +42,6 @@ AC_CONFIG_FILES([
   libltdl/Makefile
   src/Makefile
   src/distributions/Makefile	
+  src/functions/Makefile	
 ])
 AC_OUTPUT

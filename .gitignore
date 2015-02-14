@@ -131,3 +131,8 @@ src/distributions/walddist_la-DSWald.lo
 src/distributions/walddist_la-DWaldTrunc.lo
 m4
 libltdl
+src/functions/.deps/
+src/functions/.libs/
+src/functions/waldfunc.la
+src/functions/waldfunc_la-DSWaldfunc.lo
+src/functions/waldfunc_la-PSWaldfunc.lo
