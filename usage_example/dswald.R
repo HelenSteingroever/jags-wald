@@ -6,20 +6,20 @@
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
 # created 2015-02-14
-# last mod 2015-02-14 17:11 DW
+# last mod 2015-02-14 17:52 DW
 #
 
 # necessary libs
 library(rjags)
 load.module("wald")
-library(RWiener)
+library(statmod)
 
 # model
 mf <- textConnection("model {
   # priors
   alpha ~ dunif(0,10) 
   nu~ dunif(0,10)
-  theta ~ dunif(0,10)
+  theta ~ dunif(0,1.0)
 
   for (i in 1:N) {
     x[i] ~ dswald(alpha, nu, theta)
@@ -34,21 +34,16 @@ inits <- list(inits1,inits2,inits3)
 params <- c("alpha", "nu", "theta")
 
 # Genarate data
-N <- 100
+N <- 1000
 
 alpha <- 1
+lambda <- 1
 nu <- 1
 theta <- 0.3
 
-rswald <- function(N, alpha, nu, theta) {
-  beta.par <- 0.5
-  x <- rwiener(N, alpha/(1-beta.par), theta, beta.par, nu)
-  return(x)
-}
+RT <- theta + rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
 
-RT <- rswald(N, alpha, nu, theta)
-
-dat <- list(x=RT$q, N=N)
+dat <- list(x=RT, N=N)
 
 # sample
 j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=100)

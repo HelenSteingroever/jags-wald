@@ -1,12 +1,12 @@
 #!/usr/bin/R --silent -f
 # -*- encoding: utf-8 -*-
-# dwald.R
+# dswald2.R
 #
 # (c) 2015 Dominik Wabersich <dominik.wabersich [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
 # created 2015-02-14
-# last mod 2015-02-14 17:49 DW
+# last mod 2015-02-14 17:48 DW
 #
 
 # necessary libs
@@ -17,24 +17,23 @@ library(statmod)
 # model
 mf <- textConnection("model {
   # fixed parameters
-  lambda <- 1
+  theta <- 0
 
   # priors
-  alpha ~ dunif(0,10) 
-  nu ~ dunif(0,10)
+  alpha ~ dunif(0,2) 
+  nu ~ dunif(0,2)
 
   for (i in 1:N) {
-    x[i] ~ dwald(alpha, lambda, nu)
+    x[i] ~ dswald(alpha, nu, theta)
   }
 }")
 
-# initial values
 inits1 <- list(alpha=0.7, nu=0.8)
 inits2 <- list(alpha=0.9, nu=1.2)
 inits3 <- list(alpha=1.1, nu=1.1)
 inits <- list(inits1,inits2,inits3)
 
-params <- c("alpha", "lambda", "nu")
+params <- c("alpha", "nu")
 
 # Genarate data
 N <- 1000

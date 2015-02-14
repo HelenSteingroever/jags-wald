@@ -10,19 +10,20 @@
 
 using std::vector;
 
-#define LAMBDA(par) (*par[0])
-#define ALPHA(par) (*par[1])
-#define TAU(par) (*par[2])
-#define KAPPA(par) (*par[3])
+#define ALPHA(par) (*par[0])
+#define TAU(par) (*par[1])
+#define KAPPA(par) (*par[2])
 
 namespace wald {
 
-DWaldGamma::DWaldGamma() : ScalarDist("dwald_gamma", 4, DIST_PROPORTION)
+DWaldGamma::DWaldGamma() : ScalarDist("dwald_gamma", 3, DIST_PROPORTION)
 {}
 
 bool DWaldGamma::checkParameterValue (vector<double const *> const &parameters) const
 {
-    return  (true);
+    return(TAU(parameters)>0 
+           && KAPPA(parameters)>0
+           && ALPHA(parameters)>0);
 }
 
 double DWaldGamma::r_gamma(double x) const
@@ -51,7 +52,6 @@ double DWaldGamma::erf(double x) const
 double DWaldGamma::dwald_gamma(double t, vector<double const *> const &parameters) const
 {
   // calculates log density
-  double lambda = LAMBDA(parameters); 
   double alpha = ALPHA(parameters); 
   double tau = TAU(parameters); 
   double kappa = KAPPA(parameters);
@@ -89,7 +89,7 @@ double DWaldGamma::dwald_gamma(double t, vector<double const *> const &parameter
       
       C2 = sqrt(2.)*pow(alpha,3)*pow(kappa,3)*sqrt(t);
       
-      d = log(-(1.0/16.0)*pow(2.,((.5)*tau+.5))*alpha*exp(-(.5)*pow(alpha,2)/t)*pow(kappa,(-tau-3.))*
+      d = -(1.0/16.0)*pow(2.,((.5)*tau+.5))*alpha*exp(-(.5)*pow(alpha,2)/t)*pow(kappa,(-tau-3.))*
       pow(t,(-(.5)*tau-7.0/2.0))*M_PI*
       
       (
@@ -170,9 +170,11 @@ double DWaldGamma::dwald_gamma(double t, vector<double const *> const &parameter
        L4*
        kappa*t
        
-       ))-
+       )/
       
-      log(r_gamma(tau)) -log(C1) - log(cos((.5)*M_PI*tau)) - log(r_gamma(-(.5)*tau+2.));
+      (r_gamma(tau)*C1*cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.));
+
+      d = log(d);
   }
   return(d);
 }

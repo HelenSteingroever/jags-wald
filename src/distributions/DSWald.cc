@@ -30,8 +30,11 @@ double DSWald::dswald(double t, vector<double const *> const &parameters) const
 
   double logd;
 
-  logd = log(alpha) +  (-.5) * (log(2) + log(M_PI) + 3*log(t-theta)) 
-         + ( -pow((alpha-nu*(t-theta)),2) / (2*(t-theta)) );
+  if(t<=theta) 
+    logd = JAGS_NEGINF;
+  else 
+    logd = log(alpha) +  (-.5) * (log(2) + log(M_PI) + 3*log(t-theta)) 
+           + ( -pow((alpha-nu*(t-theta)),2) / (2*(t-theta)) );
 
   return(logd);
 }

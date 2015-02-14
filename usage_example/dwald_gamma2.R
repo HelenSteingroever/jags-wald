@@ -1,49 +1,53 @@
 #!/usr/bin/R --silent -f
 # -*- encoding: utf-8 -*-
-# dwald.R
+# dwald_gamma2.R
 #
 # (c) 2015 Dominik Wabersich <dominik.wabersich [aet] gmail.com>
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
 # created 2015-02-14
-# last mod 2015-02-14 17:49 DW
+# last mod 2015-02-14 18:24 DW
 #
+
+rm(list=ls())
 
 # necessary libs
 library(rjags)
-load.module("wald")
 library(statmod)
+load.module("wald")
 
 # model
 mf <- textConnection("model {
   # fixed parameters
-  lambda <- 1
+  kappa <- 1
 
   # priors
-  alpha ~ dunif(0,10) 
-  nu ~ dunif(0,10)
+  alpha ~ dunif(0.1,2.1) 
+  tau ~ dunif(0.9,1.1)
 
   for (i in 1:N) {
-    x[i] ~ dwald(alpha, lambda, nu)
+    x[i] ~ dwald_gamma(alpha, tau, kappa)
   }
 }")
 
-# initial values
-inits1 <- list(alpha=0.7, nu=0.8)
-inits2 <- list(alpha=0.9, nu=1.2)
-inits3 <- list(alpha=1.1, nu=1.1)
+# inits  
+inits1 <- list(alpha=1.0, tau=1.0)
+inits2 <- list(alpha=1.0, tau=1.0)
+inits3 <- list(alpha=1.0, tau=1.0)
 inits <- list(inits1,inits2,inits3)
-
-params <- c("alpha", "lambda", "nu")
+  
+# Parameters to be monitored  
+params <- c("alpha", "tau")
 
 # Genarate data
-N <- 1000
-
-alpha <- 1
-lambda <- 1
-nu <- 1
-
-RT <- rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
+# (1) Generate drift rates
+N <- 500
+tau <- 1
+kappa <- 1
+nu <- rgamma(N, tau, kappa)
+# (2) Generate RTs
+alpha=1
+RT=rinvgauss(N, mean=alpha/nu, shape=alpha^2)
 
 dat <- list(x=RT, N=N)
 
@@ -52,4 +56,6 @@ j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=100)
 j.samples <- coda.samples(j.model, params, n.iter=400, thin=3)
 
 # plot
+par(mfrow=c(3,4))
 plot(j.samples)
+
