@@ -92,3 +92,12 @@ make win64
 # + Note: If you compile both 32bit and 64bit don't forget to
 make clean
 #   between the building.
+
+GSL Dependency
+--------------
+To remove the gsl (gnu scientific library) dependency, which is only needed
+for the dwald_gamma function, run the git patch 'remove_gsl.patch' with
+this command:
+  git apply remove_gsl.patch
+or
+  git am --signoff < remove_gsl.patch
