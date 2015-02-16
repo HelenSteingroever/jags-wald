@@ -1,6 +1,7 @@
 #include <Module.h> // JAGS module base class
 #include <distributions/DWald.h> // Wald (Inverse Gaussian) distribution class
 #include <distributions/DSWald.h> // Shifted Wald distribution class
+#include <distributions/PSWald.h> // Shifted Wald cumulative distribution class
 #include <distributions/DWaldTrunc.h> // Driftrate as Truncated - Wald Normal distribution class
 #include <distributions/DWaldGamma.h> // Driftrate as Gamma - Wald distribution class
 #include <functions/DSWaldfunc.h> // 
@@ -18,6 +19,7 @@ WALDModule::WALDModule() : Module("wald") {
   // load distributions
   insert(new DWald); // inherited function to load JAGS objects
   insert(new DSWald); // inherited function to load JAGS objects
+  insert(new PSWald); // inherited function to load JAGS objects
   insert(new DWaldTrunc); // inherited function to load JAGS objects
   insert(new DWaldGamma); // inherited function to load JAGS objects
 

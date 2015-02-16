@@ -6,7 +6,7 @@
 # GPL 3.0+ or (cc) by-sa (http://creativecommons.org/licenses/by-sa/3.0/)
 #
 # created 2015-02-14
-# last mod 2015-02-14 17:48 DW
+# last mod 2015-02-16 19:54 DW
 #
 
 # necessary libs
@@ -39,8 +39,9 @@ params <- c("alpha", "nu")
 N <- 1000
 
 alpha <- 1
-lambda <- 1
 nu <- 1
+
+lambda <- 1
 
 RT <- rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
 

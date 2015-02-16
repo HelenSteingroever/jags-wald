@@ -8,7 +8,6 @@ class DSWald : public ScalarDist // scalar distribution class
 {
   public:
     DSWald(); // constructor
-    double dswald(double t, std::vector<double const *> const &parameters) const;
     double logDensity(double x, PDFType type,
                       std::vector<double const *> const &parameters,
                       double const *lower, double const *upper) const;

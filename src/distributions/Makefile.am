@@ -5,6 +5,6 @@ walddist_la_CPPFLAGS = -I$(top_srcdir)/src \
 
 walddist_la_LDFLAGS = -no-undefined -module -avoid-version
 
-walddist_la_SOURCES = DWald.cc DSWald.cc DWaldTrunc.cc DWaldGamma.cc
+walddist_la_SOURCES = DWald.cc DSWald.cc PSWald.cc DWaldTrunc.cc DWaldGamma.cc
 
-noinst_HEADERS = DWald.h DSWald.h DWaldTrunc.h DWaldGamma.h
+noinst_HEADERS = DWald.h DSWald.h PSWald.h DWaldTrunc.h DWaldGamma.h

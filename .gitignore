@@ -136,3 +136,5 @@ src/functions/.libs/
 src/functions/waldfunc.la
 src/functions/waldfunc_la-DSWaldfunc.lo
 src/functions/waldfunc_la-PSWaldfunc.lo
+src/distributions/walddist_la-PSWald.lo
+src/functions/waldfunc_la-PSWaldfunc.lo

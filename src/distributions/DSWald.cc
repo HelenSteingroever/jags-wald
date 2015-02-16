@@ -22,32 +22,32 @@ bool DSWald::checkParameterValue (vector<double const *> const &parameters) cons
     return(true);
 }
 
-double DSWald::dswald(double t, vector<double const *> const &parameters) const
-{
-  double alpha = ALPHA(parameters);
-  double nu = NU(parameters);
-  double theta = THETA(parameters);
-
-  double logd;
-
-  if(t<=theta) 
-    logd = JAGS_NEGINF;
-  else 
-    logd = log(alpha) +  (-.5) * (log(2) + log(M_PI) + 3*log(t-theta)) 
-           + ( -pow((alpha-nu*(t-theta)),2) / (2*(t-theta)) );
-
-  return(logd);
-}
-
 double DSWald::logDensity(double x, PDFType type,
        vector<double const *> const &parameters,
        double const *lbound, double const *ubound) const 
 {
     double logd = 0;
 
-    logd = dswald(x , parameters);
+    if(x<=THETA(parameters)) 
+      logd = JAGS_NEGINF;
+    else 
+      logd = log(ALPHA(parameters)) +  (-.5) * (log(2) + log(M_PI) + 3*log(x-THETA(parameters))) +
+             ( -pow((ALPHA(parameters)-NU(parameters)*(x-THETA(parameters))),2) / (2*(x-THETA(parameters))) );
 
     return logd;
+
+    /*
+    double d = 0;
+
+    if(x<=THETA(parameters)) 
+      d = 0;
+    else 
+      d = ALPHA(parameters) * sqrt(2*M_PI*pow((x-THETA(parameters)),3)) * 
+          exp(-pow((ALPHA(parameters)-NU(parameters)*(x-THETA(parameters))),2) / (2*(x-THETA(parameters))));
+
+    return log(d);
+    */
+
 }
 
 double DSWald::randomSample(vector<double const *> const &parameters, 
