@@ -1,0 +1,299 @@
+From 01dc287e466ac59678039d370f7d523da4c2ccb7 Mon Sep 17 00:00:00 2001
+From: yeagle <dominik.wabersich@gmail.com>
+Date: Mon, 16 Feb 2015 20:31:30 +0100
+Subject: [PATCH] removed all code that depended on gsl
+
+---
+ src/Makefile.am                 |   4 +-
+ src/distributions/DWaldGamma.cc | 211 ----------------------------------------
+ src/distributions/DWaldGamma.h  |  30 ------
+ src/distributions/Makefile.am   |   4 +-
+ 4 files changed, 4 insertions(+), 245 deletions(-)
+ delete mode 100644 src/distributions/DWaldGamma.cc
+ delete mode 100644 src/distributions/DWaldGamma.h
+
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 7ca5b28..22679e0 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -10,9 +10,9 @@ wald_la_LIBADD = distributions/walddist.la \
+                  functions/waldfunc.la
+ 
+ if WINDOWS
+-wald_la_LIBADD += -ljags-$(JAGS_MAJOR) -ljrmath-0 -lgsl
++wald_la_LIBADD += -ljags-$(JAGS_MAJOR) -ljrmath-0
+ else
+-wald_la_LIBADD += -ljags -ljrmath -lgsl
++wald_la_LIBADD += -ljags -ljrmath
+ endif
+ 
+ wald_la_LDFLAGS = -module -avoid-version
+diff --git a/src/distributions/DWaldGamma.cc b/src/distributions/DWaldGamma.cc
+deleted file mode 100644
+index 525f4e8..0000000
+--- a/src/distributions/DWaldGamma.cc
++++ /dev/null
+@@ -1,211 +0,0 @@
+-#include <config.h>
+-#include "DWaldGamma.h"
+-#include <rng/RNG.h>
+-#include <util/nainf.h>
+-
+-#include <JRmath.h>
+-#include <cmath>
+-
+-#include <gsl/gsl_specfunc.h>
+-
+-using std::vector;
+-
+-#define ALPHA(par) (*par[0])
+-#define TAU(par) (*par[1])
+-#define KAPPA(par) (*par[2])
+-
+-namespace wald {
+-
+-DWaldGamma::DWaldGamma() : ScalarDist("dwald_gamma", 3, DIST_PROPORTION)
+-{}
+-
+-bool DWaldGamma::checkParameterValue (vector<double const *> const &parameters) const
+-{
+-    return(TAU(parameters)>0 
+-           && KAPPA(parameters)>0
+-           && ALPHA(parameters)>0);
+-}
+-
+-double DWaldGamma::r_gamma(double x) const
+-{
+-  return exp(gamma(x));
+-}
+-
+-double DWaldGamma::LaguerreL(double n, double a, double x) const
+-{
+-  double Lf;
+-
+-  Lf = 1/((n+a+1)*(r_gamma(1+a)*r_gamma(n+1)/r_gamma((1+a)+(n+1)))) * gsl_sf_hyperg_1F1(-n,a+1,x); 
+-
+-  return Lf;
+-}
+-
+-double DWaldGamma::erf(double x) const
+-{
+-  double e;
+-  
+-  e = 2 * pnorm(x * sqrt(2), 0,1, 1,0) - 1;
+-  
+-  return e;
+-}
+-
+-double DWaldGamma::dwald_gamma(double t, vector<double const *> const &parameters) const
+-{
+-  // calculates log density
+-  double alpha = ALPHA(parameters); 
+-  double tau = TAU(parameters); 
+-  double kappa = KAPPA(parameters);
+-  
+-  double d;
+-    
+-  if (alpha == 1 && tau == 1 && kappa == 1 )
+-  {
+-      d = (- 1. / (2.*t)) - log(2.) -2*log(t);
+-  }
+-  else if (tau == 1)
+-  {
+-      d = log(alpha) - ((2.*alpha*kappa-1.)/(2.*t*pow(kappa,2))) + 
+-      log(1. + erf( (alpha*kappa-1.) / (kappa*sqrt(2.*t)) )) -
+-      log(2.) - 2*log(t) - log(kappa);
+-  }
+-  else
+-  {
+-      double L1; 
+-      double L2; 
+-      double L3; 
+-      double L4; 
+-      double C1; 
+-      double C2; 
+-                                                 
+-      L1 = LaguerreL(-(.5)*tau+.5, .5, (.5)*pow(alpha*kappa-1.,2)/(pow(kappa,2)*t));
+-      
+-      L2 = LaguerreL(-(.5)*tau+.5, 3./2., (.5)*pow(alpha*kappa-1.,2)/(pow(kappa,2)*t));
+-      
+-      L3 = LaguerreL(-(.5)*tau, .5, (.5)*pow(alpha*kappa-1.,2)/(pow(kappa,2)*t));
+-      
+-      L4 = LaguerreL(-(.5)*tau, 3./2., (.5)*pow(alpha*kappa-1.,2)/(pow(kappa,2)*t));
+-      
+-      C1 = sin((.5)*M_PI*tau)*r_gamma(-(.5)*tau+3./2.);
+-      
+-      C2 = sqrt(2.)*pow(alpha,3)*pow(kappa,3)*sqrt(t);
+-      
+-      d = -(1.0/16.0)*pow(2.,((.5)*tau+.5))*alpha*exp(-(.5)*pow(alpha,2)/t)*pow(kappa,(-tau-3.))*
+-      pow(t,(-(.5)*tau-7.0/2.0))*M_PI*
+-      
+-      (
+-       
+-       C1*
+-       L1*
+-       C2 +
+-       
+-       C1*
+-       L1*
+-       sqrt(2.)*alpha*pow(kappa,3)*tau*pow(t,(3./2.)) -
+-       
+-       C1*
+-       L2*
+-       C2 -
+-       
+-       C1*
+-       L1*
+-       sqrt(2.)*alpha*pow(kappa,3)*pow(t,(3./2.)) -
+-       
+-       3.*C1*
+-       L1*
+-       sqrt(2.)*pow(alpha,2)*pow(kappa,2)*sqrt(t) -
+-       
+-       C1*
+-       L1*
+-       sqrt(2.)*pow(kappa,2)*tau*pow(t,(3./2.)) +
+-       
+-       3.*C1*
+-       L2*
+-       sqrt(2.)*pow(alpha,2)*pow(kappa,2)*sqrt(t)-
+-       
+-       2.*
+-       L3*
+-       cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*pow(alpha,2)*pow(kappa,3)*t +
+-       
+-       2.*cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*
+-       L4*
+-       pow(alpha,2)*pow(kappa,3)*t +
+-       
+-       C1*
+-       L1*
+-       sqrt(2.)*pow(kappa,2)*pow(t,(3./2.)) -
+-       
+-       2.*
+-       L3*
+-       cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*pow(kappa,3)*pow(t,2) +
+-       
+-       3.*C1*
+-       L1*
+-       sqrt(2.)*alpha*kappa*sqrt(t) -
+-       
+-       3.*C1*
+-       L2*
+-       sqrt(2.)*alpha*kappa*sqrt(t) +
+-       
+-       4.*
+-       L3*
+-       cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*alpha*pow(kappa,2)*t -
+-       
+-       4.*cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*
+-       L4*
+-       alpha*pow(kappa,2)*t -
+-       
+-       C1*
+-       L1*
+-       sqrt(2.)*sqrt(t) +
+-       
+-       C1*
+-       L2*
+-       sqrt(2.)*sqrt(t) -
+-       
+-       2.*
+-       L3*
+-       cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*kappa*t +
+-       
+-       2.*cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.)*
+-       L4*
+-       kappa*t
+-       
+-       )/
+-      
+-      (r_gamma(tau)*C1*cos((.5)*M_PI*tau)*r_gamma(-(.5)*tau+2.));
+-
+-      d = log(d);
+-  }
+-  return(d);
+-}
+-
+-double DWaldGamma::logDensity(double x, PDFType type,
+-       vector<double const *> const &parameters,
+-       double const *lbound, double const *ubound) const 
+-{
+-    double logd = 0;
+-
+-    logd = dwald_gamma(x , parameters);
+-
+-    return logd;
+-}
+-
+-double DWaldGamma::randomSample(vector<double const *> const &parameters, 
+-         double const *lbound, double const *ubound,
+-         RNG *rng) const
+-{
+-    return fabs( rng->uniform() );
+-}
+-
+-double DWaldGamma::typicalValue(vector<double const *> const &parameters,
+-         double const *lbound, double const *ubound) const
+-{
+-    return 0.5;
+-}
+-
+-bool DWaldGamma::isDiscreteValued(vector<bool> const &mask) const
+-{
+-    return true;
+-}
+-
+-}
+diff --git a/src/distributions/DWaldGamma.h b/src/distributions/DWaldGamma.h
+deleted file mode 100644
+index 7606536..0000000
+--- a/src/distributions/DWaldGamma.h
++++ /dev/null
+@@ -1,30 +0,0 @@
+-#ifndef DWALDGAMMA_H_
+-#define DWALDGAMMA_H_
+-#include <distribution/ScalarDist.h> // JAGS scalar distribution base class
+-
+-namespace wald {
+-
+-class DWaldGamma : public ScalarDist // scalar distribution class
+-{
+-  public:
+-    DWaldGamma(); // constructor
+-    double r_gamma(double x) const;
+-    double LaguerreL(double n, double a, double x) const;
+-    double erf(double x) const;
+-    double dwald_gamma(double t, std::vector<double const *> const &parameters) const;
+-    double logDensity(double x, PDFType type,
+-                      std::vector<double const *> const &parameters,
+-                      double const *lower, double const *upper) const;
+-    double randomSample(std::vector<double const *> const &parameters,
+-                        double const *lower, double const *upper,
+-                        RNG *rng) const;
+-    double typicalValue(std::vector<double const *> const &parameters,
+-                        double const *lower, double const *upper) const;
+-    /** Checks that p lies in the open interval (0,1) */
+-    bool checkParameterValue(std::vector<double const *> const &parameters) const;
+-    /** Distribution is discrete valued */
+-    bool isDiscreteValued(std::vector<bool> const &mask) const;
+-};
+-
+-}
+-#endif /* DWALDGAMMA_H_ */
+diff --git a/src/distributions/Makefile.am b/src/distributions/Makefile.am
+index ec4c46d..8bec368 100644
+--- a/src/distributions/Makefile.am
++++ b/src/distributions/Makefile.am
+@@ -5,6 +5,6 @@ walddist_la_CPPFLAGS = -I$(top_srcdir)/src \
+ 
+ walddist_la_LDFLAGS = -no-undefined -module -avoid-version
+ 
+-walddist_la_SOURCES = DWald.cc DSWald.cc PSWald.cc DWaldTrunc.cc DWaldGamma.cc
++walddist_la_SOURCES = DWald.cc DSWald.cc PSWald.cc DWaldTrunc.cc
+ 
+-noinst_HEADERS = DWald.h DSWald.h PSWald.h DWaldTrunc.h DWaldGamma.h
++noinst_HEADERS = DWald.h DSWald.h PSWald.h DWaldTrunc.h
+-- 
+1.9.1
+
