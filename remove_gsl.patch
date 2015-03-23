@@ -1,14 +1,15 @@
-From 01dc287e466ac59678039d370f7d523da4c2ccb7 Mon Sep 17 00:00:00 2001
+From 69c5fc4b3926f3c6e0304def1c3bcc5bfeb8bf42 Mon Sep 17 00:00:00 2001
 From: yeagle <dominik.wabersich@gmail.com>
-Date: Mon, 16 Feb 2015 20:31:30 +0100
-Subject: [PATCH] removed all code that depended on gsl
+Date: Mon, 23 Mar 2015 17:46:20 +0100
+Subject: [PATCH] removed gsl dependend code
 
 ---
  src/Makefile.am                 |   4 +-
  src/distributions/DWaldGamma.cc | 211 ----------------------------------------
  src/distributions/DWaldGamma.h  |  30 ------
  src/distributions/Makefile.am   |   4 +-
- 4 files changed, 4 insertions(+), 245 deletions(-)
+ src/wald.cc                     |   2 -
+ 5 files changed, 4 insertions(+), 247 deletions(-)
  delete mode 100644 src/distributions/DWaldGamma.cc
  delete mode 100644 src/distributions/DWaldGamma.h
 
@@ -294,6 +295,26 @@ index ec4c46d..8bec368 100644
  
 -noinst_HEADERS = DWald.h DSWald.h PSWald.h DWaldTrunc.h DWaldGamma.h
 +noinst_HEADERS = DWald.h DSWald.h PSWald.h DWaldTrunc.h
+diff --git a/src/wald.cc b/src/wald.cc
+index 7fc7721..c3e7218 100644
+--- a/src/wald.cc
++++ b/src/wald.cc
+@@ -3,7 +3,6 @@
+ #include <distributions/DSWald.h> // Shifted Wald distribution class
+ #include <distributions/PSWald.h> // Shifted Wald cumulative distribution class
+ #include <distributions/DWaldTrunc.h> // Driftrate as Truncated - Wald Normal distribution class
+-#include <distributions/DWaldGamma.h> // Driftrate as Gamma - Wald distribution class
+ #include <functions/DSWaldfunc.h> // 
+ #include <functions/PSWaldfunc.h> // 
+ 
+@@ -21,7 +20,6 @@ WALDModule::WALDModule() : Module("wald") {
+   insert(new DSWald); // inherited function to load JAGS objects
+   insert(new PSWald); // inherited function to load JAGS objects
+   insert(new DWaldTrunc); // inherited function to load JAGS objects
+-  insert(new DWaldGamma); // inherited function to load JAGS objects
+ 
+   // load functions
+   insert(new DSWaldfunc);
 -- 
 1.9.1
 
