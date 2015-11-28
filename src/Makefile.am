@@ -10,9 +10,9 @@ wald_la_LIBADD = distributions/walddist.la \
                  functions/waldfunc.la
 
 if WINDOWS
-wald_la_LIBADD += -ljags-$(JAGS_MAJOR) -ljrmath-0 -lgsl
+wald_la_LIBADD += -ljags-$(JAGS_MAJOR) -ljrmath-0
 else
-wald_la_LIBADD += -ljags -ljrmath -lgsl
+wald_la_LIBADD += -ljags -ljrmath
 endif
 
 wald_la_LDFLAGS = -module -avoid-version
