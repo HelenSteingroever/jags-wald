@@ -21,7 +21,6 @@ WALDModule::WALDModule() : Module("wald") {
   insert(new DSWald); // inherited function to load JAGS objects
   insert(new PSWald); // inherited function to load JAGS objects
   insert(new DWaldTrunc); // inherited function to load JAGS objects
-  insert(new DWaldGamma); // inherited function to load JAGS objects
 
   // load functions
   insert(new DSWaldfunc);
