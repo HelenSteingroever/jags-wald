@@ -3,6 +3,7 @@
 
 #include <function/ScalarFunction.h>
 
+namespace jags {
 namespace wald {
 
 class PSWaldfunc : public ScalarFunction 
@@ -14,6 +15,7 @@ class PSWaldfunc : public ScalarFunction
     double evaluate(std::vector<double const *> const &args) const;
 };
 
-}
+} // namespace wald
+} // namespace jags
 
 #endif /* PSWALDFUNC_H_ */

@@ -1,4 +1,4 @@
-#include <Module.h> // JAGS module base class
+#include <module/Module.h> // JAGS module base class
 #include <distributions/DWald.h> // Wald (Inverse Gaussian) distribution class
 #include <distributions/DSWald.h> // Shifted Wald distribution class
 #include <distributions/PSWald.h> // Shifted Wald cumulative distribution class
@@ -43,4 +43,4 @@ WALDModule::~WALDModule() {
 } // namespace wald
 } // namespace jags
 
-wald::WALDModule _wald_module;
+jags::wald::WALDModule _wald_module;

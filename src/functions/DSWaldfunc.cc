@@ -12,6 +12,7 @@ using std::string;
 #define NU(par) (*par[2])
 #define THETA(par) (*par[3])
 
+namespace jags {
 namespace wald {
 
 DSWaldfunc::DSWaldfunc()
@@ -37,4 +38,5 @@ double DSWaldfunc::evaluate(vector<double const *> const &args) const
 }
 
 
-}
+} // namespace wald
+} // namespace jags
