@@ -3,7 +3,6 @@
 #include <distributions/DSWald.h> // Shifted Wald distribution class
 #include <distributions/PSWald.h> // Shifted Wald cumulative distribution class
 #include <distributions/DWaldTrunc.h> // Driftrate as Truncated - Wald Normal distribution class
-#include <distributions/DWaldGamma.h> // Driftrate as Gamma - Wald distribution class
 #include <functions/DSWaldfunc.h> // 
 #include <functions/PSWaldfunc.h> // 
 
