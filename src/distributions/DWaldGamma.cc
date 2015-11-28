@@ -14,6 +14,7 @@ using std::vector;
 #define TAU(par) (*par[1])
 #define KAPPA(par) (*par[2])
 
+namespace jags {
 namespace wald {
 
 DWaldGamma::DWaldGamma() : ScalarDist("dwald_gamma", 3, DIST_PROPORTION)
@@ -208,4 +209,5 @@ bool DWaldGamma::isDiscreteValued(vector<bool> const &mask) const
     return true;
 }
 
-}
+} // namespace wald
+} // namespace jags

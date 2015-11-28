@@ -12,6 +12,7 @@ using std::vector;
 #define LAMBDA(par) (*par[1])
 #define NU(par) (*par[2])
 
+namespace jags {
 namespace wald {
 
 DWald::DWald() : ScalarDist("dwald", 3, DIST_PROPORTION)
@@ -53,4 +54,5 @@ bool DWald::isDiscreteValued(vector<bool> const &mask) const
     return true;
 }
 
-}
+} // namespace wald
+} // namespace jags

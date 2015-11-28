@@ -2,6 +2,7 @@
 #define DSWALD_H_
 #include <distribution/ScalarDist.h> // JAGS scalar distribution base class
 
+namespace jags {
 namespace wald {
 
 class DSWald : public ScalarDist // scalar distribution class
@@ -22,5 +23,7 @@ class DSWald : public ScalarDist // scalar distribution class
     bool isDiscreteValued(std::vector<bool> const &mask) const;
 };
 
-}
+} // namespace wald
+} // namespace jags
+
 #endif /* DSWALD_H_ */

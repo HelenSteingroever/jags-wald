@@ -7,6 +7,7 @@
 #include <functions/DSWaldfunc.h> // 
 #include <functions/PSWaldfunc.h> // 
 
+namespace jags { // jags namespace
 namespace wald { // module namespace
 
 class WALDModule : public Module { // module class
@@ -39,6 +40,7 @@ WALDModule::~WALDModule() {
   }
 }
 
-}
+} // namespace wald
+} // namespace jags
 
 wald::WALDModule _wald_module;

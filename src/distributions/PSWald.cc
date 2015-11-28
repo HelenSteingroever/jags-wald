@@ -12,6 +12,7 @@ using std::vector;
 #define NU(par) (*par[1])
 #define THETA(par) (*par[2])
 
+namespace jags {
 namespace wald {
 
 PSWald::PSWald() : ScalarDist("pswald_upper", 3, DIST_PROPORTION)
@@ -58,4 +59,5 @@ bool PSWald::isDiscreteValued(vector<bool> const &mask) const
     return true;
 }
 
-}
+} // namespace wald
+} // namespace jags

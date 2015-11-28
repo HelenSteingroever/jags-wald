@@ -13,6 +13,7 @@ using std::vector;
 #define V(par) (*par[2])
 #define D(par) (*par[3])
 
+namespace jags {
 namespace wald {
 
 DWaldTrunc::DWaldTrunc() : ScalarDist("dwald_trunc", 4, DIST_PROPORTION)
@@ -79,4 +80,5 @@ bool DWaldTrunc::isDiscreteValued(vector<bool> const &mask) const
     return true;
 }
 
-}
+} // namespace wald
+} // namespace jags
