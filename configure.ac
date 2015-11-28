@@ -43,5 +43,6 @@ AC_CONFIG_FILES([
   src/Makefile
   src/distributions/Makefile	
   src/functions/Makefile	
+  win/Makefile
 ])
 AC_OUTPUT

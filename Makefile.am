@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = libltdl src
+SUBDIRS = libltdl src win
 
 .PHONY: win32-install win64-install installer
 
