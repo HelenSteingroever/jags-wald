@@ -95,9 +95,6 @@ make clean
 
 GSL Dependency
 --------------
-To remove the gsl (gnu scientific library) dependency, which is only needed
-for the dwald_gamma function, run the git patch 'remove_gsl.patch' with
-this command:
-  git apply remove_gsl.patch
-or
-  git am --signoff < remove_gsl.patch
+To remove the gsl (gnu scientific library) dependency, use the no_gsl
+branch: 
+  git clone -b no_gsl ...
