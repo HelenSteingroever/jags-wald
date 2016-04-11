@@ -21,7 +21,7 @@ load.module("wald")
 # model
 mf <- textConnection("model {
   # priors
-  lambda <- 1
+  lambda <- 1  # is fixed!
 
   alpha ~ dunif(0, 10) 
   v ~ dunif(0, 10)
@@ -39,26 +39,36 @@ inits3 <- list(alpha=1.1, v=1.1, d=1.1)
 inits <- list(inits1,inits2,inits3)
 
 # Parameters to be monitored  
-params <- c("alpha", "v", "d")
+params <- c("alpha", "d", "v")
 
 # Genarate data
 # (1) Generate drift rates
 N <- 1000
-d <- 1
-v <- 1
+d <- 2  # mean of the truncated normal distribution
+v <- 3  # nu; variance of the trunc. normal distribution 
 nu <- rtruncnorm(N, a=0, b=Inf, mean=d, sd=sqrt(v))  
 
 # (2) Generate RTs
-alpha=lambda=1
+# alpha: boundary separation
+# lambda: diffusion coefficient
+alpha=lambda=1 
+tr.params <- c(alpha, d, v)
 RT=rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
 
 dat <- list(x=RT, N=N)
 
 # sample
-j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=100)
-j.samples <- coda.samples(j.model, params, n.iter=400, thin=3)
+j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=1000)
+j.samples <- coda.samples(j.model, params, n.iter=4000, thin=3)
 
 
 # plot
 par(mfrow=c(3,4))
 plot(j.samples)
+
+layout(matrix(1:3, nrow=1))
+for (i in 1:3) {  # loop over chains
+  samples <- c(j.samples[[1]][,i], j.samples[[2]][,i], j.samples[[3]][,i])
+  plot(density(samples), main=params[i])
+  lines(c(tr.params[i],tr.params[i]), c(0, max(density(samples)$y)))  	
+}
