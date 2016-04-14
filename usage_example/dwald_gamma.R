@@ -17,42 +17,52 @@ library(statmod)
 load.module("wald")
 
 # model
-mf <- textConnection("model {
+my.model <- function() {
   # fixed parameters
-  tau <- 1
-  kappa <- 1
+  tau <- .5
+  kappa <- 9
 
   # priors
-  alpha ~ dunif(0.1,2.1) 
+  alpha ~ dunif(0.01,2.1) 
 
   for (i in 1:N) {
-    x[i] ~ dwald_gamma(alpha, tau, kappa)
+    RT[i] ~ dwald_gamma(alpha, tau, kappa)
   }
-}")
+}
 
 # inits  
-inits1 <- list(alpha=1.0)
-inits2 <- list(alpha=1.0)
-inits3 <- list(alpha=1.0)
+inits1 <- list(alpha=1.2)
+inits2 <- list(alpha=1.2)
+inits3 <- list(alpha=1.2)
 inits <- list(inits1,inits2,inits3)
   
 # Parameters to be monitored  
 params <- c("alpha")
 
 # Genarate data
-# (1) Generate drift rates
-N <- 500
-tau <- 1
-kappa <- 1
-nu <- rgamma(N, tau, kappa)
-# (2) Generate RTs
-alpha=1
-RT=rinvgauss(N, mean=alpha/nu, shape=alpha^2)
+N <- 10000   # Number of reaction times
 
-dat <- list(x=RT, N=N)
+# (1) Generate drift rates
+kappa <- 9   # shape: small values: right-skewed curve.
+             # hihger: symmetric, shifted to the right
+tau <- .5    # scale (strechting; the higher, the more stretching)
+nu <- rgamma(N, shape=kappa, scale=tau)
+plot(density(nu))
+
+# (2) Generate RTs
+alpha <- 1.2
+RT <- rinvgauss(N, mean=alpha/nu, shape=alpha^2)
+plot(density(RT))
+
+dat <- list(RT=RT, N=N)
 
 # sample
-j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=100)
+jags(dat, inits=NULL, params,  # inits=myinits
+	 			  model.file =my.model, n.chains=3, n.iter=2000, 
+          n.burnin=1000, n.thin=1, DIC=T)  
+
+
+j.model <- jags.model(my.model, dat, inits=NULL, n.chains=3, n.adapt=100)
 j.samples <- coda.samples(j.model, params, n.iter=400, thin=3)
 
 # plot

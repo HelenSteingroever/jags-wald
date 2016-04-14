@@ -19,7 +19,7 @@ load.module("wald")
 
 
 # model
-mf <- textConnection("model {
+my.model <- function() {
   # priors
   lambda <- 1  # is fixed!
 
@@ -30,7 +30,7 @@ mf <- textConnection("model {
   for (i in 1:N) {
     x[i] ~ dwald_trunc(lambda, alpha, v, d)
   }
-}")
+}
 
 # inits  
 inits1 <- list(alpha=0.7, v=0.7, d=0.9)
@@ -43,32 +43,36 @@ params <- c("alpha", "d", "v")
 
 # Genarate data
 # (1) Generate drift rates
-N <- 1000
-d <- 2  # mean of the truncated normal distribution
-v <- 3  # nu; variance of the trunc. normal distribution 
+N <- 10000
+d <- 9  # mean of the truncated normal distribution
+v <- (.5)^2  # nu; std of the trunc. normal distribution 
 nu <- rtruncnorm(N, a=0, b=Inf, mean=d, sd=sqrt(v))  
+plot(density(nu))
 
 # (2) Generate RTs
 # alpha: boundary separation
 # lambda: diffusion coefficient
-alpha=lambda=1 
+alpha=1.2
+lambda=1 
 tr.params <- c(alpha, d, v)
 RT=rinvgauss(N, mean=alpha/nu, shape=lambda*alpha^2)
+plot(density(RT))
 
 dat <- list(x=RT, N=N)
 
 # sample
-j.model <- jags.model(mf, dat, inits, n.chains=3, n.adapt=1000)
-j.samples <- coda.samples(j.model, params, n.iter=4000, thin=3)
+samples <- jags(dat, inits=inits, params,  # inits=NULL
+	 			model.file=my.model, n.chains=3, n.iter=2000, 
+                n.burnin=1000, n.thin=1, DIC=T)  
+samples
+j.samples <- as.mcmc(samples)
 
-
-# plot
-par(mfrow=c(3,4))
-plot(j.samples)
-
+index <- c(1, 2, 4)
+tr.params <- c(alpha, d, v)
 layout(matrix(1:3, nrow=1))
 for (i in 1:3) {  # loop over chains
-  samples <- c(j.samples[[1]][,i], j.samples[[2]][,i], j.samples[[3]][,i])
+  h <- index[i]
+  samples <- c(j.samples[[1]][,h], j.samples[[2]][,h], j.samples[[3]][,h])
   plot(density(samples), main=params[i])
   lines(c(tr.params[i],tr.params[i]), c(0, max(density(samples)$y)))  	
-}
+} 
