@@ -92,9 +92,3 @@ make win64-install
 # + Note: If you compile both 32bit and 64bit don't forget to
 make clean
 #   between the building.
-
-GSL Dependency
---------------
-To remove the gsl (gnu scientific library) dependency, use the no_gsl
-branch: 
-  git clone -b no_gsl ...
