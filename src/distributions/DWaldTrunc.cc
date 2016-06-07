@@ -12,11 +12,13 @@ using std::vector;
 #define ALPHA(par) (*par[1])
 #define V(par) (*par[2])
 #define D(par) (*par[3])
+#define THETA(par) (*par[4])
+
 
 namespace jags {
 namespace wald {
 
-DWaldTrunc::DWaldTrunc() : ScalarDist("dwald_trunc", 4, DIST_PROPORTION)
+DWaldTrunc::DWaldTrunc() : ScalarDist("dwald_trunc", 5, DIST_PROPORTION)
 {}
 
 bool DWaldTrunc::checkParameterValue (vector<double const *> const &parameters) const
@@ -30,7 +32,8 @@ double DWaldTrunc::dwald_trunc(double t, vector<double const *> const &parameter
   double alpha = ALPHA(parameters); 
   double v = V(parameters); 
   double d = D(parameters);
-
+  double theta = THETA(parameters);
+    
   double w;
   
   /* w = alpha * sqrt( lambda / (2 * M_PI * pow(t, 3) * (lambda * t * v + 1)) ) *
@@ -43,10 +46,10 @@ double DWaldTrunc::dwald_trunc(double t, vector<double const *> const &parameter
   
   w = log(alpha) + 
       0.5 * ( log(lambda) - 
-              log(2) - log(M_PI) - 3 * log(t) - log(lambda * t * v + 1)) -
+              log(2) - log(M_PI) - 3 * log(t-theta) - log(lambda * (t-theta) * v + 1)) -
       log(pnorm(d / sqrt(v), 0, 1, 1, 0) ) -
-      (lambda * pow(d * t - alpha,2)) / (2 * t * (lambda * t * v + 1)) +
-      log(pnorm((lambda * alpha * v + d) / (sqrt(lambda * t * pow(v,2) + v)), 0, 1, 1, 0 ));
+      (lambda * pow(d * (t-theta) - alpha,2)) / (2 * (t-theta) * (lambda * (t-theta) * v + 1)) +
+      log(pnorm((lambda * alpha * v + d) / (sqrt(lambda * (t-theta) * pow(v,2) + v)), 0, 1, 1, 0 ));
   
   return w;
 }
