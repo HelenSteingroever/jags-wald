@@ -14,4 +14,7 @@ win64-install:
 installer:
 	(cd win && $(MAKE) $@)
 
+examples-zip:
+	(zip -r examples examples)
+
 FORCE:

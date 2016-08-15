@@ -1,0 +1,16 @@
+model {
+  # RT needs to be in seconds
+  
+  lambda <- 1  # fixed diffusion coefficient
+
+  alpha ~ dnorm(  2, .4)T(0,)        # threshold
+  theta ~ dnorm(.180, 4)T(0, minRT)  # shift  
+  
+  mu_xi   ~ dnorm(8, .1)T(0,)  # mean drift
+  sig2_xi ~ dunif(0,  5)       # across-trial variance of drift
+ 
+  for (t in 1:T) {
+    RT[t] ~ dwald_trunc(lambda, alpha, sig2_xi, mu_xi, theta)
+  } 
+}
+

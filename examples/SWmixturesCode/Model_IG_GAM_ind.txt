@@ -1,0 +1,20 @@
+model {
+  # RT needs to be in seconds
+
+  alpha ~ dnorm(   2, .4)T(0,)       # threshold
+  theta ~ dnorm(.180, 4)T(0, minRT)  # shift  
+    
+  mu_xi   ~ dnorm(8, .1)T(0,)  # drift mean
+  sig2_xi ~ dunif(0,  5)       # drift variance
+  
+  kappa <- (mu_xi^2) / sig2_xi    # shape
+  tau   <- mu_xi / sig2_xi        # rate
+  
+  for (t in 1:T) {
+    # Variability in drift rate nu 
+    # JAGS: dgamma(shape, rate)
+    xi[t] ~ dgamma(kappa, tau)
+    	
+    RT[t] ~ dswald(alpha, xi[t], theta)
+  }	
+}
