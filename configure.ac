@@ -2,14 +2,14 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
 
-AC_INIT([JAGS-WALD],[0.1],[helen.steingroever@gmail.com],[JAGS-WALD-MODULE])
+AC_INIT([JAGS-WALD],[0.2],[helen.steingroever@gmail.com],[JAGS-WALD-MODULE])
 JAGS_MAJOR=4
 JAGS_MINOR=0
 AC_SUBST(JAGS_MAJOR)
 AC_SUBST(JAGS_MINOR)
 
 AC_CANONICAL_HOST
-AC_CONFIG_SRCDIR([src/distributions/DWald.cc])
+AC_CONFIG_SRCDIR([src/distributions/DSWald.cc])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([subdir-objects])

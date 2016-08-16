@@ -129,6 +129,7 @@ src/distributions/.libs/
 src/distributions/walddist_la-DWaldGamma.lo
 src/distributions/walddist_la-DSWald.lo
 src/distributions/walddist_la-DWaldTrunc.lo
+src/distributions/walddist_la-DSWTN.lo
 m4
 libltdl
 src/functions/.deps/

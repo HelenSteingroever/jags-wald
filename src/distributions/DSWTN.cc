@@ -1,5 +1,5 @@
 #include <config.h>
-#include "DWaldTrunc.h"
+#include "DSWTN.h"
 #include <rng/RNG.h>
 #include <util/nainf.h>
 
@@ -8,27 +8,27 @@
 
 using std::vector;
 
-#define LAMBDA(par) (*par[0])
-#define ALPHA(par) (*par[1])
-#define V(par) (*par[2])
-#define D(par) (*par[3])
-#define THETA(par) (*par[4])
+// #define LAMBDA(par) (*par[0])
+#define ALPHA(par) (*par[0])
+#define THETA(par) (*par[1])
+#define D(par) (*par[2])
+#define V(par) (*par[3])
 
 
 namespace jags {
 namespace wald {
 
-DWaldTrunc::DWaldTrunc() : ScalarDist("dwald_trunc", 5, DIST_PROPORTION)
+DSWTN::DSWTN() : ScalarDist("dswtn", 4, DIST_PROPORTION)
 {}
 
-bool DWaldTrunc::checkParameterValue (vector<double const *> const &parameters) const
+bool DSWTN::checkParameterValue (vector<double const *> const &parameters) const
 {
     return  (true);
 }
 
-double DWaldTrunc::dwald_trunc(double t, vector<double const *> const &parameters) const
+double DSWTN::dswtn(double t, vector<double const *> const &parameters) const
 {
-  double lambda = LAMBDA(parameters); 
+  double lambda = 1; // LAMBDA(parameters); 
   double alpha = ALPHA(parameters); 
   double v = V(parameters); 
   double d = D(parameters);
@@ -54,31 +54,31 @@ double DWaldTrunc::dwald_trunc(double t, vector<double const *> const &parameter
   return w;
 }
 
-double DWaldTrunc::logDensity(double x, PDFType type,
+double DSWTN::logDensity(double x, PDFType type,
        vector<double const *> const &parameters,
        double const *lbound, double const *ubound) const 
 {
     double d = 0;
 
-    d = dwald_trunc(x , parameters);
+    d = dswtn(x , parameters);
     
     return d;
 }
 
-double DWaldTrunc::randomSample(vector<double const *> const &parameters, 
+double DSWTN::randomSample(vector<double const *> const &parameters, 
          double const *lbound, double const *ubound,
          RNG *rng) const
 {
     return fabs( rng->uniform() );
 }
 
-double DWaldTrunc::typicalValue(vector<double const *> const &parameters,
+double DSWTN::typicalValue(vector<double const *> const &parameters,
          double const *lbound, double const *ubound) const
 {
     return 0.5;
 }
 
-bool DWaldTrunc::isDiscreteValued(vector<bool> const &mask) const
+bool DSWTN::isDiscreteValued(vector<bool> const &mask) const
 {
     return true;
 }

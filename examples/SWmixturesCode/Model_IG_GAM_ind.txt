@@ -15,6 +15,6 @@ model {
     # JAGS: dgamma(shape, rate)
     xi[t] ~ dgamma(kappa, tau)
     	
-    RT[t] ~ dswald(alpha, xi[t], theta)
+    RT[t] ~ dswald(alpha, theta, xi[t])
   }	
 }

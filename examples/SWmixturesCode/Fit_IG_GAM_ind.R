@@ -48,7 +48,6 @@ dat <- list(RT=RT, T=T, minRT=minRT)
 
 # Collect samples from posterior distributions
 # Change the working directory to the folder containing the model file
-setwd("~/Dropbox/2014/Wald/SWmixturesCode")
 samples <- jags(dat, inits=NULL, params,  # inits=NULL
 	 			model.file="Model_IG_GAM_ind.txt", n.chains=3, n.iter=31000, 
 	 			n.burnin=1000, n.thin=15, DIC=T)  

@@ -5,11 +5,11 @@
 namespace jags {
 namespace wald {
 
-class DWaldTrunc : public ScalarDist // scalar distribution class
+class DSWTN : public ScalarDist // scalar distribution class
 {
   public:
-    DWaldTrunc(); // constructor
-    double dwald_trunc(double t, std::vector<double const *> const &parameters) const;
+    DSWTN(); // constructor
+    double dswtn(double t, std::vector<double const *> const &parameters) const;
     double logDensity(double x, PDFType type,
                       std::vector<double const *> const &parameters,
                       double const *lower, double const *upper) const;

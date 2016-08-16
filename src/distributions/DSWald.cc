@@ -9,8 +9,8 @@
 using std::vector;
 
 #define ALPHA(par) (*par[0])
-#define NU(par) (*par[1])
-#define THETA(par) (*par[2])
+#define THETA(par) (*par[1])
+#define NU(par) (*par[2]) // xi[t]
 
 namespace jags {
 namespace wald {

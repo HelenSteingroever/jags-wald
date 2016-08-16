@@ -5,9 +5,9 @@
 # The programs R and JAGS (a recent version) are needed to fit the models. In
 # addition, the jags-wald module has to be build (see Wabersich & 
 # Vandekerckhove, 2014; Behav Res; they also describe how the installation of
-# the module can be tested). (!!! put all files together for the module !!!)
+# the module can be tested).
 # Please cite "Steingroever, Wabersich & Wagenmakers (submitted). Modeling 
-# Variability in the Drift Diffusion Parameter" when using this code.
+# Across-Trial Variability in the Wald Drift Rate Parameter" when using this code.
 ################################################################################
 
 1. Fit_IG_TN_ind.r:  R code to generate data and to fit the IG-TN mixture.
