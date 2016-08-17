@@ -150,3 +150,16 @@ Windows Compiling
 
 - *Note*: If you compile both 32bit and 64bit don't forget to make clean
   between the building.
+
+- *All Windows commands in one* (for copy paste convenience)
+
+  CXX="g++ -m32" \
+  ./configure LDFLAGS="-L/c/Progra~1/JAGS/JAGS-4.0.0/i386/bin" \
+  CXXFLAGS="-I/c/Progra~1/JAGS/JAGS-4.0.0/include" && \
+  make win32-install && \
+  make clean && \
+  CXX="g++ -m64" \
+  ./configure LDFLAGS="-L/c/Progra~1/JAGS/JAGS-4.0.0/x64/bin" \
+  CXXFLAGS="-I/c/Progra~1/JAGS/JAGS-4.0.0/include" &&
+  make win64-install && \
+  make clean

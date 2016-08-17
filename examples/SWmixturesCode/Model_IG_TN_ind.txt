@@ -8,7 +8,7 @@ model {
   sig2_xi ~ dunif(0,  5)       # across-trial variance of drift
  
   for (t in 1:T) {
-    RT[t] ~ dswtn(alpha, theta, sig2_xi, mu_xi)
+    RT[t] ~ dswtn(alpha, theta, mu_xi, sig2_xi)
   } 
 }
 
