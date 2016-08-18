@@ -7,12 +7,8 @@
 
 rm(list=ls())
 # Load required libraries
-#library(rjags)
 library(R2jags)
 library(statmod)     # for rinvgauss 
-#library(SuppDists)  # for rinvGauss
-#library(msm)	     # for rtnorm
-#library(RWald)
 load.module("wald")  # for the JAGS distribution dswald()
                      # To activate the extension, modules have to be loaded
                      # explicetly. 
@@ -46,8 +42,10 @@ params <- c("alpha", "theta", "mu_xi", "sig2_xi")
 # Data to be passed on to JAGS
 dat <- list(RT=RT, T=T, minRT=minRT)
 
-# Collect samples from posterior distributions
 # Change the working directory to the folder containing the model file
+setwd("examples/SWmixturesCode")
+
+# Collect samples from posterior distributions
 samples <- jags(dat, inits=NULL, params,  # inits=NULL
 	 			model.file="Model_IG_GAM_ind.txt", n.chains=3, n.iter=31000, 
 	 			n.burnin=1000, n.thin=15, DIC=T)  
