@@ -3,9 +3,9 @@
 # This text file lists all files that are necessary to fit the SW-TN and SW-GAM 
 # mixtures as described in Steingroever, Wabersich, & Wagenmakers (submitted).
 # The programs R and JAGS (a recent version) are needed to fit the models. In
-# addition, the jags-wald module has to be build (see Wabersich & 
-# Vandekerckhove, 2014; Behav Res; they also describe how the installation of
-# the module can be tested).
+# addition, the jags-wald module has to be build (see the README file in the 
+# main folder, and Wabersich & Vandekerckhove, 2014; Behav Res; they also
+# describe how the installation of the module can be tested).
 # Please cite "Steingroever, Wabersich & Wagenmakers (submitted). Modeling 
 # Across-Trial Variability in the Wald Drift Rate Parameter" when using this
 # code.

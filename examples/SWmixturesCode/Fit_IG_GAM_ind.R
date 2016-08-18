@@ -17,17 +17,18 @@ load.module("wald")  # for the JAGS distribution dswald()
 ################################################################################
 ##### Genarate data
 ################################################################################
+set.seed(3)
 T <- 120      # number of trials
 
 # (1) Generate drift rates
-mu  <- 9.42  # drift mean
-var <- 4.62  # drift variance
-kappa <- mu^2 / var  # shape
-tau <- mu  / var     # rate           
+mu_xi   <- 10.04  # drift mean
+sig2_xi <-  4.54  # drift variance
+kappa <- mu_xi^2 / sig2_xi  # shape
+tau <- mu_xi / sig2_xi    # rate           
 xi <- rgamma(T, shape=kappa, rate=tau)
 
 # (2) Generate RTs
-alpha <- 0.90  # threshold  
+alpha <- 0.98  # threshold  
 theta <- 0.10  # shift
 RT <- rinvgauss(T, mean=alpha/xi, shape=alpha^2) + theta
 minRT <- min(RT)
@@ -47,8 +48,8 @@ setwd("examples/SWmixturesCode")
 
 # Collect samples from posterior distributions
 samples <- jags(dat, inits=NULL, params,  # inits=NULL
-	 			model.file="Model_IG_GAM_ind.txt", n.chains=3, n.iter=31000, 
-	 			n.burnin=1000, n.thin=15, DIC=T)  
+	 			model.file="Model_IG_GAM_ind.txt", n.chains=3, n.iter=41000, 
+	 			n.burnin=1200, n.thin=10, DIC=T)  
 # Print a summary of the posterior samples
 samples
 ################################################################################  

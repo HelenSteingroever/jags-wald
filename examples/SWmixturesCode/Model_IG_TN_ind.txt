@@ -4,8 +4,8 @@ model {
   alpha ~ dnorm(  2, .4)T(0,)        # threshold
   theta ~ dnorm(.180, 4)T(0, minRT)  # shift  
   
-  mu_xi   ~ dnorm(8, .1)T(0,)  # mean drift
-  sig2_xi ~ dunif(0,  5)       # across-trial variance of drift
+  mu_xi   ~ dnorm(8, .1)T(0,)  # drift mean
+  sig2_xi ~ dunif(0,  5)       # drift variance
  
   for (t in 1:T) {
     RT[t] ~ dswtn(alpha, theta, mu_xi, sig2_xi)
