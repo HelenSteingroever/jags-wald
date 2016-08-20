@@ -88,12 +88,15 @@ Windows Compiling
 
 **First, in Linux:**
 
-- For building the module in Windows it is easiest to use a tarball that
+- For building the module in Windows, it is easiest to use a tarball that
   was created in linux like this (starting from a source clone):
 
     autoreconf -fvi
     ./configure
     make dist-gzip
+
+- As an alternative to building this tarball yourself from the github
+  source, one can use the tarball that is available for the latest release.
 
 - Copy the *.tar.gz file to your msys home directory and continue from
   there.

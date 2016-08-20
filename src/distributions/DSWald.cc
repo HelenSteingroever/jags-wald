@@ -37,6 +37,7 @@ double DSWald::logDensity(double x, PDFType type,
 
     return logd;
 
+    // code template for R provided by Robert Miller and adapted thereafter
     /*
     double d = 0;
 
