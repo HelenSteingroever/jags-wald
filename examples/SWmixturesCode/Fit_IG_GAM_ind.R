@@ -44,7 +44,7 @@ params <- c("alpha", "theta", "mu_xi", "sig2_xi")
 dat <- list(RT=RT, T=T, minRT=minRT)
 
 # Change the working directory to the folder containing the model file
-setwd("examples/SWmixturesCode")
+#setwd("examples/SWmixturesCode")
 
 # Collect samples from posterior distributions
 samples <- jags(dat, inits=NULL, params,  # inits=NULL
