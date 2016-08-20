@@ -8,8 +8,8 @@ JAGS Extensions provided
 Distributions
 """""""""""""
 - dswald: Shifted Wald distribution
-- dswtn: Shifted Wald distribution with across-trial variability derived
-  from a truncated normal distribution
+- dswtn: Shifted Wald distribution with across-trial variability in the Wald
+  drift rate parameter governed by a truncated normal distribution
 
 Functions
 """""""""
@@ -18,9 +18,10 @@ Functions
 
 Abandoned Functionality
 """""""""""""""""""""""
-- dswgam: Shifted Wald distribution with across-trial variability derived from a
-  gamma distribution. This function was abandoned due to various reasons,
-  however: the examples provided show how to do the this within a jags model file.
+- dswgam: Shifted Wald distribution with across-trial variability in the Wald 
+  drift rate parameter governed by a gamma distribution. This function was
+  abandoned due to various reasons. However, the examples provided show how this 
+  can be implemented using a for-loop construction.
 
 Examples
 --------
@@ -55,13 +56,13 @@ Use the tarball and install as usual:
   ./configure && make && sudo make install
 
 Note: It might be necessary to define a different prefix, depending on
-where JAGS is copied (i.e. installed), e.g.:
+where JAGS is copied (i.e. installed), for example:
 
   ./configure --prefix /usr && make && sudo make install
 
 Windows
 """""""
-For Windows we will provide precompiled binaries, which come with an
+For Windows we provide precompiled binaries, which come with an
 installer.
 
 Compiling from a cloned repository

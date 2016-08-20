@@ -1,7 +1,7 @@
 model {
   # RT needs to be in seconds
 
-  alpha ~ dnorm(   2, .4)T(0,)       # threshold
+  alpha ~ dnorm(  2, .4)T(0,)        # threshold
   theta ~ dnorm(.180, 4)T(0, minRT)  # shift  
     
   mu_xi   ~ dnorm(8, .1)T(0,)  # drift mean
